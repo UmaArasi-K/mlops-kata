@@ -1,0 +1,37 @@
+name: MLOps Kata CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install flake8
+        run: pip install flake8
+
+      - name: Lint Python files
+        run: flake8 . --max-line-length=120 --exclude=venv,.venv,env
+
+  streak-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check streak log exists
+        run: |
+          if [ ! -f streaks/log.md ]; then
+            echo "ERROR: streaks/log.md is missing. Streak must not be deleted."
+            exit 1
+          fi
+          echo "streaks/log.md exists. Streak intact."
